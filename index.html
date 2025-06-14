@@ -128,7 +128,7 @@
       <h2>Delivery Details</h2>
       <input type="text" id="name" placeholder="Full Name" required>
       <input type="tel" id="phone" placeholder="Phone Number" required>
-      <input type="text" id="address" placeholder="Start typing your address..." required>
+      <input type="text" id="address" placeholder="Enter your full address..." required>
       <button onclick="placeOrder()">Confirm Order</button>
     </div>
   </div>
@@ -194,15 +194,6 @@
       cartWindow.document.write(`</ul><h3>Total: ₹${sum}</h3></body></html>`);
       cartWindow.document.close();
     }
-  </script>
-
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY_HERE&libraries=places"></script>
-  <script>
-    function initAutocomplete() {
-      const input = document.getElementById('address');
-      new google.maps.places.Autocomplete(input);
-    }
-    google.maps.event.addDomListener(window, 'load', initAutocomplete);
   </script>
 </body>
 </html>
