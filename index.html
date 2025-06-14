@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Shop</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px;
+      font-size: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-title {
+      margin: 0 auto;
+    }
+    .cart-button {
+      background-color: white;
+      color: #4CAF50;
+      border: 2px solid white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-right: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .cart-button:hover {
+      background-color: #ffffffcc;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .product {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .product:last-child {
+      border-bottom: none;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .cart {
+      margin-top: 30px;
+    }
+    .form-section {
+      margin-top: 30px;
+      display: none;
+    }
+    input {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin: 8px 0;
+    }
+    #total {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-title">My Product Store</div>
+    <button class="cart-button" onclick="openCartPage()">🛒 View Cart</button>
+  </header>
+
+  <div class="container">
+    <div class="product" data-name="Product A" data-price="200">
+      <span><strong>Product A</strong> - ₹200</span>
+      <button onclick="addToCart('Product A', 200)">Add to Cart</button>
+    </div>
+
+    <div class="product" data-name="Product B" data-price="350">
+      <span><strong>Product B</strong> - ₹350</span>
+      <button onclick="addToCart('Product B', 350)">Add to Cart</button>
+    </div>
+
+    <div class="cart" id="cart-section">
+      <h2>Cart</h2>
+      <ul id="cart-list"></ul>
+      <p id="total">Total: ₹0</p>
+      <button onclick="showForm()">Place Order</button>
+    </div>
+
+    <div class="form-section" id="order-form">
+      <h2>Delivery Details</h2>
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="tel" id="phone" placeholder="Phone Number" required>
+      <input type="text" id="address" placeholder="Start typing your address..." required>
+      <button onclick="placeOrder()">Confirm Order</button>
+    </div>
+  </div>
+
+  <script>
+    let cart = [];
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      updateCart();
+    }
+
+    function updateCart() {
+      const cartList = document.getElementById('cart-list');
+      const total = document.getElementById('total');
+      cartList.innerHTML = '';
+      let sum = 0;
+      cart.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - ₹${item.price}`;
+        cartList.appendChild(li);
+        sum += item.price;
+      });
+      total.textContent = `Total: ₹${sum}`;
+    }
+
+    function showForm() {
+      document.getElementById('order-form').style.display = 'block';
+    }
+
+    function placeOrder() {
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+      const address = document.getElementById('address').value;
+
+      if (!name || !phone || !address) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      if (!address.toLowerCase().includes('bangalore')) {
+        alert('Sorry, delivery is only available within Bangalore.');
+      } else {
+        const emailBody = `Name: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nItems Ordered:\n` +
+          cart.map(item => `${item.name} - ₹${item.price}`).join('\n');
+
+        alert(`Order confirmed!\nEmail will be sent with following details:\n\n${emailBody}`);
+      }
+    }
+
+    function openCartPage() {
+      const cartWindow = window.open('', '_blank');
+      if (!cartWindow || !cartWindow.document) {
+        alert('Popup blocked! Please allow popups for this site to view the cart in a new tab.');
+        return;
+      }
+      let sum = cart.reduce((acc, item) => acc + item.price, 0);
+      cartWindow.document.write('<html><head><title>Your Cart</title><style>body{font-family:sans-serif;padding:20px;}li{margin:10px 0;}</style></head><body>');
+      cartWindow.document.write('<h1>Your Cart</h1><ul>');
+      cart.forEach(item => {
+        cartWindow.document.write(`<li>${item.name} - ₹${item.price}</li>`);
+      });
+      cartWindow.document.write(`</ul><h3>Total: ₹${sum}</h3></body></html>`);
+      cartWindow.document.close();
+    }
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY_HERE&libraries=places"></script>
+  <script>
+    function initAutocomplete() {
+      const input = document.getElementById('address');
+      new google.maps.places.Autocomplete(input);
+    }
+    google.maps.event.addDomListener(window, 'load', initAutocomplete);
+  </script>
+</body>
+</html>
