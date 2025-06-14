@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Product Shop</title>
+  <title>Valvet</title>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init('service_go1r00l'); // Replace with your actual EmailJS user ID
+    })();
+  </script>
   <style>
     * {
       box-sizing: border-box;
@@ -127,7 +133,7 @@
     <div class="form-section" id="order-form">
       <h2>Delivery Details</h2>
       <input type="text" id="name" placeholder="Full Name" required>
-      <input type="tel" id="phone" placeholder="Phone Number" required>
+      <input type="tel" id="phone" placeholder="Phone Number (10 digits)" pattern="\d{10}" required>
       <input type="text" id="address" placeholder="Enter your full address..." required>
       <button onclick="placeOrder()">Confirm Order</button>
     </div>
@@ -160,22 +166,33 @@
     }
 
     function placeOrder() {
-      const name = document.getElementById('name').value;
-      const phone = document.getElementById('phone').value;
-      const address = document.getElementById('address').value;
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
 
-      if (!name || !phone || !address) {
-        alert('Please fill in all fields.');
+      if (!name || !phone.match(/^\d{10}$/) || !address) {
+        alert('Please fill in all fields correctly. Phone must be 10 digits.');
         return;
       }
 
       if (!address.toLowerCase().includes('bangalore')) {
         alert('Sorry, delivery is only available within Bangalore.');
       } else {
-        const emailBody = `Name: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nItems Ordered:\n` +
-          cart.map(item => `${item.name} - ₹${item.price}`).join('\n');
+        const cartDetails = cart.map(item => `${item.name} - ₹${item.price}`).join("\n");
+        const emailParams = {
+          to_email: 'aniketh.bhat28@gmail.com',
+          from_name: name,
+          phone: phone,
+          address: address,
+          message: `Items Ordered:\n${cartDetails}`
+        };
 
-        alert(`Order confirmed!\nEmail will be sent with following details:\n\n${emailBody}`);
+        emailjs.send('your_service_id', 'your_template_id', emailParams)
+          .then(function(response) {
+            alert('Order placed and email sent successfully!');
+          }, function(error) {
+            alert('Failed to send email. Please try again later.');
+          });
       }
     }
 
